@@ -1,9 +1,9 @@
-# ZAMEEN - Automated tests
+# ZAMEEN - Automated Tests
 
-Frameworks used: Cucumber, Capybara (scripting language: Ruby) 
-Utilized the SitePrism gem for implementing page object model
+# Frameworks used: Cucumber, Capybara (scripting language: Ruby) 
+# Utilized the SitePrism gem for implementing page object model
 
-Folder structure:
+# Folder structure:
 
 |-- features
 |   |-- pages
