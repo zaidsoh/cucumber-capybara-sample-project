@@ -1,4 +1,4 @@
-# zameen---automated-tests
+# ZAMEEN - Automated tests
 
 Frameworks used: Cucumber, Capybara (utilized SitePrism for implementing page object model)
 
