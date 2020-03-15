@@ -14,4 +14,4 @@ Folder structure:
 |   |-- support
 |   |   `-- env.rb
 |   `-- search.feature
-`-- README.m
+`-- README
