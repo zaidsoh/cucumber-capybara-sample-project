@@ -4,30 +4,34 @@ class SearchResults < SitePrism::Page
  
     #Elements on SearchResults
 	element :locationString, :id, 'Koan-via-SearchHeader__input'
-	element :durationString, 'div#menuItemButton-date_picker > ._v2ee95z'
-	element :guestString, 'div#menuItemButton-guest_picker > ._v2ee95z'
+	element :durationString, :id, 'menuItemButton-date_picker'
+	element :guestString, :id, 'menuItemButton-guest_picker'
 
 	element :moreFilters, :id, 'menuItemButton-dynamicMoreFilters'
 	element :bedroomAddButton, :xpath, '//*[@id="filterItem-stepper-min_bedrooms-0"]/button[2]'
-	element :showStaysButton, '._2i58o3a'
-	element :popUpName, '._sh35u3h'
-	element :popUpPrice, '._o60r27k'
+	element :showStaysButton, :xpath, '/html/body/div[9]/section/div/div/footer/button'
+
+	element :poolCheckbox, :xpath, "/html/body/div[9]/section/div/div/div[2]/descendant::div[contains(text(),'Pool')]"
+
+	element :popUpTitle, :xpath, '//*[@id="ExploreLayoutController"]/div[2]/div[3]/aside/div/div[1]/div/div/div[1]/div[3]/div/div[4]/div[21]/div/div[1]/div/div[2]/div[1]'
+	element :popUpName, :xpath, '//*[@id="ExploreLayoutController"]/div[2]/div[3]/aside/div/div[1]/div/div/div[1]/div[3]/div/div[4]/div[21]/div/div[1]/div/div[2]/div[2]'
+	element :popUpPrice, :xpath, '//*[@id="ExploreLayoutController"]/div[2]/div[3]/aside/div/div[1]/div/div/div[1]/div[3]/div/div[4]/div[21]/div/div[1]/div/div[2]/div[3]'
+	element :popUpRating, :xpath, '//*[@id="ExploreLayoutController"]/div[2]/div[3]/aside/div/div[1]/div/div/div[1]/div[3]/div/div[4]/div[21]/div/div[1]/div/div[2]/div[4]'
+
 
     #Collections of elements with the same selector on SearchResults
-	elements :searchResults, '._8ssblpx'
-	elements :guestStrings, '._1ulsev2'
-	elements :bedroomStrings, '._1ulsev2'
-	elements :commonCheckboxes, '._6ioq746'
+	elements :searchResults, :xpath, '//*[@id="ExploreLayoutController"]/div[2]/div[1]/div/div/div[2]/div/div/div/div[2]/div/div/div/div/child::div'
+	elements :guestBedStrings, :xpath, "//*[@id='ExploreLayoutController']/div[2]/div[1]/div/div/div[2]/div/div/div/div[2]/div/div/div/div/descendant::div[contains(text(),'guests')]"
 
-	elements :mapPills, '._1nq36y92'
-	elements :titles, '._4ntfzh'
-	elements :names, '._1jbo9b6h'
-	elements :prices, '._zkkcbwd'
-	elements :ratings, '._60hvkx2'
+	elements :mapPills, :xpath, '//*[@id="ExploreLayoutController"]/div[2]/div[3]/aside/div/div[1]/div/div/div[1]/div[3]/descendant::button'
+	elements :resultTitles, :xpath, "//*[@id='ExploreLayoutController']/div[2]/div[1]/div/div/div[2]/div/div/div/div[2]/div/div/div/div/descendant::div[contains(text(),'Entire') or contains(text(),'room')]/parent::div"
+	elements :resultNames, :xpath, "//*[@id='ExploreLayoutController']/div[2]/div[1]/div/div/div[2]/div/div/div/div[2]/div/div/div/div/descendant::div[contains(@style,'ellipsis')]"
+	elements :resultPrices, :xpath, "//*[@id='ExploreLayoutController']/div[2]/div[1]/div/div/div[2]/div/div/div/div[2]/div/div/div/div/descendant::span[contains(text(),' / night')]/parent::div"
+	elements :resultRatings, :xpath, "//*[@id='ExploreLayoutController']/div[2]/div[1]/div/div/div[2]/div/div/div/div[2]/div/div/div/div/descendant::span[contains(text(),'Rating')]/parent::span"
 
 	#Functions for elements on SearchResults
-	def verifyLocationFilter (expectedlocation)																		#Verifies the location filter by comparing expectedLocation with locationString						
-		expect(locationString.value).to eq expectedLocation 														#text fetched from the location filter		
+	def verifyLocationFilter (expectedLocation)																	    #Verifies the location filter by comparing expectedLocation with locationString						
+		expect(locationString.value).to eq expectedLocation														    #text fetched from the location filter		
 	end
 
 	def verifyDurationFilter																						#Verifies the duration filter by calculating the duration using current date
@@ -43,25 +47,21 @@ class SearchResults < SitePrism::Page
 	end
 
 	def verifyGuestFilter (expectedGuests)																			#Verifies the guests filter by comparing expectedGuests with guestString
-		expect(guestString.text).to eq expectedNoOfGuests 															#text fetched from the guests filter
+		expect(guestString.text).to eq expectedGuests 															    #text fetched from the guests filter
 	end
 
 	def verifyGuestResults (expectedNoOfGuests)																		#Verifies the number of guests in each search result to be greater than 'expectedNoOfGuests'
 		expectedNoOfGuests = expectedNoOfGuests.to_i																#by fetching the guestString from each search result	
-		loopCount =  page.all(:css,'._1ulsev2').count
+		loopCount =  searchResults.count
 		loopCount = loopCount - 1
 
-		guestStringsArray = guestStrings.map { |guestString| guestString.text }
+		guestStringsArray = guestBedStrings.map { |guestBedString| guestBedString.text }
 		
 		while loopCount >= 0
-			if loopCount%2 ==0
-				guestString = guestStringsArray[loopCount]
-				guests = guestString.split[0].to_i
-				expect(guests >= expectedNoOfGuests).to be true
-				loopCount = loopCount - 1
-			elsif loopCount%2 != 0
-				loopCount = loopCount - 1
-			end
+			guestString = guestStringsArray[loopCount]
+			guests = guestString.split[0].to_i
+			expect(guests >= expectedNoOfGuests).to be true
+			loopCount = loopCount - 1
 		end
 	end
 
@@ -70,17 +70,13 @@ class SearchResults < SitePrism::Page
 		loopCount =  page.all(:css,'._1ulsev2').count
 		loopCount = loopCount - 1
 
-		bedroomStringsArray = bedroomStrings.map { |bedroomString| bedroomString.text }
+		bedroomStringsArray = guestBedStrings.map { |guestBedString| guestBedString.text }
 
 		while loopCount >= 0
-			if loopCount%2 ==0
-				bedroomString = bedroomStringsArray[loopCount]
-				bedrooms = bedroomString.split[3].to_i
-				expect(bedrooms >= expectedNoOfBedrooms).to be true
-				loopCount = loopCount - 1
-			elsif loopCount%2 != 0
-				loopCount = loopCount - 1
-			end
+			bedroomString = bedroomStringsArray[loopCount]
+			bedrooms = bedroomString.split[3].to_i
+			expect(bedrooms >= expectedNoOfBedrooms).to be true
+			loopCount = loopCount - 1
 		end
 	end
 
@@ -92,11 +88,8 @@ class SearchResults < SitePrism::Page
 	end
 
 	def selectFacility(facilityType)																				#Selects the facility as 'facilityType'
-		facilitySection = page.find(:css,'._9fvlwj0', :text => 'Facilities')
 		if facilityType == 'Pool'
-			within (facilitySection) do
-				commonCheckboxes[3].click
-			end
+			poolCheckbox.click
 		end
 	end
 
@@ -128,26 +121,25 @@ class SearchResults < SitePrism::Page
     	firstPropertyPill = mapPills[0]
     	firstPropertyPill.click
 
-		titlesArray = titles.map { |title| title.text }    	
-    	popUpTitle = titlesArray[20]
-		resultString = titlesArray[0]
+		resultTitlesArray = resultTitles.map { |resultTitle| resultTitles.text }    	
+    	popUpTitle = popUpTitle.text
+		resultString = resultTitlesArray[0]
 		resultTitle = resultString.split(" Rating")[0]
 		expect(popUpTitle).to eq resultTitle
 
-		namesArray = names.map { |name| name.text }        
-		popUpName = popUpName
-		resultName = namesArray[0]
+		resultNamesArray = resultNames.map { |resultName| resultName.text }        
+		popUpName = popUpName.text
+		resultName = resultNamesArray[0]
 		expect(popUpName).to eq resultName
 
-		pricesArray = prices.map { |price| price.text }
+		resultsPricesArray = resultsPrices.map { |resultsPrice| resultsPrice.text }
 		popUpPrice = popUpPrice.text
-		resultPrice = pricesArray[0]
+		resultPrice = resultsPricesArray[0]
 		expect(popUpPrice).to eq resultPrice
 
-		ratingsArray = ratings.map { |rating| rating.text }	
-		popUpRating = ratingsArray[20]
-		resultRating = ratingsArray[0]
+		resultRatingsArray = resultRatings.map { |resultRating| resultRating.text }	
+		popUpRating = popUpRating.text
+		resultRating = resultRatingsArray[0]
 		expect(popUpRating).to eq resultRating
-	end		
-end
-
+	end
+end		

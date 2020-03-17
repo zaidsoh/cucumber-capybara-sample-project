@@ -6,7 +6,7 @@ class SearchMain < SitePrism::Page
   	element :where, :id, 'Koan-magic-carpet-koan-search-bar__input'
   	element :searchOptionOne, :id, 'Koan-magic-carpet-koan-search-bar__option-0'
 
-    element :nextMonth, '._1h5uiygl'
+    element :nextMonth, :xpath, '//*[@id="FMP-target"]/div/div[1]/div/div/div/div/div[1]/div[2]/div/form/div[2]/div/div/div/div[2]/div/div/div/div/div/div[2]/div[1]/div[2]'
 
   	element :checkIn, :id, 'checkin_input'
   	element :checkOut, :id, 'checkout_input'
@@ -14,10 +14,11 @@ class SearchMain < SitePrism::Page
   	element :guestsButton, :id, 'lp-guestpicker'
   	element :adultAddButton, :xpath, '//*[@id="FMP-target"]/div/div[1]/div/div/div/div/div[1]/div[2]/div/form/div[3]/div/div[2]/div/div/div[1]/div[1]/div/div/div/div[2]/div/div[3]/button'
   	element :childAddButton, :xpath, '//*[@id="FMP-target"]/div/div[1]/div/div/div/div/div[1]/div[2]/div/form/div[3]/div/div[2]/div/div/div[1]/div[2]/div/div/div/div[2]/div/div[3]/button' 
-  	element :infantAddButton, :xpath, '//*[@id="FMP-target"]/div/div[1]/div/div/div/div/div[1]/div[2]/div/form/div[3]/div/div[2]/div/div/div[1]/div[3]/div/div/div/div[2]/div/div[3]/button'  
+  	element :infantAddButton, :xpath, '//*[@id="FMP-target"]/div/div[1]/div/div/div/div/div[1]/div[2]/div/form/div[3]/div/div[2]/div/div/div[1]/div[3]/div/div/div/div[2]/div/div[3]/button'
 
   	element :saveButton, :id, 'filter-panel-save-button'
-  	element :searchButton, '._1vs0x720'
+  	element :searchButton, :xpath, '//*[@id="FMP-target"]/div/div[1]/div/div/div/div/div[1]/div[2]/div/form/div[4]/div/button'
+
 
     #Functions for elements on SearchMain
   	def enterLocation(location)
@@ -34,11 +35,37 @@ class SearchMain < SitePrism::Page
   		currentDay = DateTime.now.strftime("%d").to_i
       currentMonth = DateTime.now.strftime("%m").to_i
       currentYear = DateTime.now.strftime("%y").to_i
-      currentMonthDays = (Date.new(currentYear, 12, 31) << (12-currentMonth)).day  
+      currentMonthDays = (Date.new(currentYear, 12, 31) << (12-currentMonth)).day 
 
     	checkInDay = currentDay + daysToAdd
+      
+      #Leap year's feb
+      if currentMonthDays == 29 && checkInDay > 29
+        
+        checkInDay= checkInDay - 29
+        checkIn.click
+        nextMonth.click
 
-      if currentMonthDays == 30 && checkInDay > 30
+        if checkInDay <= 9
+          page.all("td", :text => checkInDay)[0].click
+        elsif checkInDay >= 10
+          find("td", :text => checkInDay).click
+        end
+      
+      #Normal year's feb
+      elsif currentMonthDays == 28 && checkInDay > 28
+        
+        checkInDay= checkInDay - 28
+        checkIn.click
+        nextMonth.click
+
+        if checkInDay <= 9
+          page.all("td", :text => checkInDay)[0].click
+        elsif checkInDay >= 10
+          find("td", :text => checkInDay).click
+        end
+
+      elsif currentMonthDays == 30 && checkInDay > 30
         
         checkInDay= checkInDay - 30
         checkIn.click
@@ -49,7 +76,7 @@ class SearchMain < SitePrism::Page
         elsif checkInDay >= 10
           find("td", :text => checkInDay).click
         end
-
+      
       elsif currentMonthDays == 31 && checkInDay > 31
 
         checkInDay= checkInDay - 31
