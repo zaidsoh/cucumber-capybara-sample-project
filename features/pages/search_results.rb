@@ -8,26 +8,26 @@ class SearchResults < SitePrism::Page
 	element :guestString, :id, 'menuItemButton-guest_picker'
 
 	element :moreFilters, :id, 'menuItemButton-dynamicMoreFilters'
-	element :bedroomAddButton, :xpath, '//*[@id="filterItem-stepper-min_bedrooms-0"]/button[2]'
-	element :showStaysButton, :xpath, '/html/body/div[9]/section/div/div/footer/button'
+	element :bedroomAddButton, :xpath, "//*[@id='filterItem-stepper-min_bedrooms-0']//*[contains(@aria-label,'increase value')]"
+	element :showStaysButton, :xpath, "//button[contains(text(),'Show')]"
+	element :poolCheckbox, :xpath, "//*[contains(text(),'Pool')]"
 
-	element :poolCheckbox, :xpath, "/html/body/div[9]/section/div/div/div[2]/descendant::div[contains(text(),'Pool')]"
-
-	element :popUpTitle, :xpath, '//*[@id="ExploreLayoutController"]/div[2]/div[3]/aside/div/div[1]/div/div/div[1]/div[3]/div/div[4]/div[21]/div/div[1]/div/div[2]/div[1]'
-	element :popUpName, :xpath, '//*[@id="ExploreLayoutController"]/div[2]/div[3]/aside/div/div[1]/div/div/div[1]/div[3]/div/div[4]/div[21]/div/div[1]/div/div[2]/div[2]'
-	element :popUpPrice, :xpath, '//*[@id="ExploreLayoutController"]/div[2]/div[3]/aside/div/div[1]/div/div/div[1]/div[3]/div/div[4]/div[21]/div/div[1]/div/div[2]/div[3]'
-	element :popUpRating, :xpath, '//*[@id="ExploreLayoutController"]/div[2]/div[3]/aside/div/div[1]/div/div/div[1]/div[3]/div/div[4]/div[21]/div/div[1]/div/div[2]/div[4]'
+	element :popUpTitle, :xpath, "//aside//*[contains(text(),'Entire') or contains(text(),'room')]"
+	element :popUpName, :xpath, "//aside//*[contains(@style,'ellipsis')]"
+	element :popUpPrice, :xpath, "//aside//*[contains(text(),' / night')]"
+	element :popUpRating, :xpath, "//aside//*[contains(@aria-label,'Rating')]"
 
 
     #Collections of elements with the same selector on SearchResults
-	elements :searchResults, :xpath, '//*[@id="ExploreLayoutController"]/div[2]/div[1]/div/div/div[2]/div/div/div/div[2]/div/div/div/div/child::div'
-	elements :guestBedStrings, :xpath, "//*[@id='ExploreLayoutController']/div[2]/div[1]/div/div/div[2]/div/div/div/div[2]/div/div/div/div/descendant::div[contains(text(),'guests')]"
+	elements :searchResults, :xpath, '//*[contains(@itemprop,"itemListElement")]'
+	elements :guestBedStrings, :xpath, "//*[contains(@itemprop,'itemListElement')]//*[contains(text(),'guests')]"
 
-	elements :mapPills, :xpath, '//*[@id="ExploreLayoutController"]/div[2]/div[3]/aside/div/div[1]/div/div/div[1]/div[3]/descendant::button'
-	elements :resultTitles, :xpath, "//*[@id='ExploreLayoutController']/div[2]/div[1]/div/div/div[2]/div/div/div/div[2]/div/div/div/div/descendant::div[contains(text(),'Entire') or contains(text(),'room')]/parent::div"
-	elements :resultNames, :xpath, "//*[@id='ExploreLayoutController']/div[2]/div[1]/div/div/div[2]/div/div/div/div[2]/div/div/div/div/descendant::div[contains(@style,'ellipsis')]"
-	elements :resultPrices, :xpath, "//*[@id='ExploreLayoutController']/div[2]/div[1]/div/div/div[2]/div/div/div/div[2]/div/div/div/div/descendant::span[contains(text(),' / night')]/parent::div"
-	elements :resultRatings, :xpath, "//*[@id='ExploreLayoutController']/div[2]/div[1]/div/div/div[2]/div/div/div/div[2]/div/div/div/div/descendant::span[contains(text(),'Rating')]/parent::span"
+	elements :mapPills, :xpath, "//aside//*[contains(@data-veloute,'map/markers/BasePillMarker')]"
+
+	elements :resultTitles, :xpath, "//*[contains(@itemprop,'itemListElement')]//*[contains(text(),'Entire') or contains(text(),'room')]"
+	elements :resultNames, :xpath, "//*[contains(@itemprop,'itemListElement')]//*[contains(@style,'ellipsis')]"
+	elements :resultPrices, :xpath, "//*[contains(@itemprop,'itemListElement')]//*[contains(text(),' / night')]"
+	elements :resultRatings, :xpath, "//*[contains(@itemprop,'itemListElement')]//*[contains(@aria-label,'Rating')]"
 
 	#Functions for elements on SearchResults
 	def verifyLocationFilter (expectedLocation)																	    #Verifies the location filter by comparing expectedLocation with locationString						
