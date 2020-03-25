@@ -2,10 +2,7 @@ require 'rubygems'
 require 'capybara'
 require 'capybara/dsl'
 require 'rspec'
-#require 'capybara/rspec'
-#require 'rspec/expectations'
 require 'site_prism'
-#require 'site_prism/all_there'
  
 Capybara.run_server = false 
 Capybara.default_driver = :selenium

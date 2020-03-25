@@ -180,19 +180,19 @@ class SearchResults < SitePrism::Page
 		end
 	end
 
-	def getSearchResultName(index)
-		index = index.to_i -1
-		return resultNames[index].text
+	def getSearchResultName(ind)
+		ind = ind.to_i - 1
+		return resultNames[ind].text
 	end
 
-	def getSearchResultPrice(index)
-		index = index.to_i -1
-		return resultPrices[index].text
+	def getSearchResultPrice(ind)
+		ind = ind.to_i - 1
+		return resultPrices[ind].text
 	end
 
-	def getSearchResultRating(index)
-		index = index.to_i -1
-		temp = resultRatings[index].native.css_value('aria-label')
+	def getSearchResultRating(ind)
+		ind = ind.to_i - 1
+		temp = resultRatings[ind].native.css_value('aria-label')
 		return temp.split(" ;")[0]
 	end
 end		
