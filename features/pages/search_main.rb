@@ -18,7 +18,7 @@ class SearchMain < SitePrism::Page
   	element :saveButton, :id, 'filter-panel-save-button'
   	element :searchButton, :xpath, "//span[contains(text(),'Search')]"
 
-
+    $nextMonthClicked = false
 
     #Functions for elements on SearchMain
   	def enterLocation(location)
@@ -38,16 +38,17 @@ class SearchMain < SitePrism::Page
       currentMonthDays = (Date.new(currentYear, 12, 31) << (12-currentMonth)).day
 
     	checkInDay = currentDay + daysToAdd
-      
+
       #Leap year's feb
       if currentMonthDays == 29 && checkInDay > 29
         
         checkInDay= checkInDay - 29
         checkIn.click
         nextMonth.click
+        $nextMonthClicked = true
 
         if checkInDay <= 9
-          page.all("td", :text => checkInDay)[0].click
+          page.all(:xpath, "(//table)[2]//td", text: checkInDay)[0].click
         elsif checkInDay >= 10
           find("td", :text => checkInDay).click
         end
@@ -58,9 +59,10 @@ class SearchMain < SitePrism::Page
         checkInDay= checkInDay - 28
         checkIn.click
         nextMonth.click
+        loopCount = true
 
         if checkInDay <= 9
-          page.all("td", :text => checkInDay)[0].click
+          page.all(:xpath, "(//table)[2]//td", text: checkInDay)[0].click
         elsif checkInDay >= 10
           find("td", :text => checkInDay).click
         end
@@ -70,9 +72,10 @@ class SearchMain < SitePrism::Page
         checkInDay= checkInDay - 30
         checkIn.click
         nextMonth.click
+        $nextMonthClicked = true
 
         if checkInDay <= 9
-          page.all("td", :text => checkInDay)[0].click
+          page.all(:xpath, "(//table)[2]//td", text: checkInDay)[0].click
         elsif checkInDay >= 10
           find("td", :text => checkInDay).click
         end
@@ -82,18 +85,19 @@ class SearchMain < SitePrism::Page
         checkInDay= checkInDay - 31
         checkIn.click
         nextMonth.click
+        $nextMonthClicked = true
 
         if checkInDay <= 9
-          page.all("td", :text => checkInDay)[0].click
+          page.all(:xpath, "(//table)[2]//td", text: checkInDay)[0].click
         elsif checkInDay >= 10
           find("td", :text => checkInDay).click
         end
 
       elsif checkInDay <= 31
-        checkIn.click
 
+        checkIn.click
         if checkInDay <= 9
-          page.all("td", :text => checkInDay)[0].click
+          page.all(:xpath, "(//table)[2]//td", text: checkInDay)[0].click
         elsif checkInDay >= 10
           find("td", :text => checkInDay).click
         end
@@ -113,8 +117,11 @@ class SearchMain < SitePrism::Page
       if currentMonthDays == 29 && checkOutDay > 29
         
         checkOutDay = checkOutDay - 29
-        checkOut.click
-        nextMonth.click
+        #checkOut.click
+
+        if ($nextMonthClicked == false)
+          nextMonth.click
+        end
 
         if checkOutDay <= 9
           page.all("td", :text => checkOutDay)[0].click
@@ -126,8 +133,9 @@ class SearchMain < SitePrism::Page
       elsif currentMonthDays == 28 && checkOutDay > 28
         
         checkOutDay = checkOutDay - 28
-        checkOut.click
-        nextMonth.click
+        if ($nextMonthClicked == false)
+          nextMonth.click
+        end
 
         if checkOutDay <= 9
           page.all("td", :text => checkOutDay)[0].click
@@ -138,8 +146,9 @@ class SearchMain < SitePrism::Page
       elsif currentMonthDays == 30 && checkOutDay > 30
 
         checkOutDay = checkOutDay - 30
-        checkOut.click
-        nextMonth.click
+        if ($nextMonthClicked == false)
+          nextMonth.click
+        end
 
         if checkOutDay <= 9
           page.all("td", :text => checkOutDay)[0].click
@@ -150,25 +159,24 @@ class SearchMain < SitePrism::Page
       elsif currentMonthDays == 31 && checkOutDay > 31
 
         checkOutDay = checkOutDay - 31
-        checkOut.click
-        nextMonth.click
+        if ($nextMonthClicked == false)
+          nextMonth.click
+        end
 
         if checkOutDay <= 9
-          page.all("td", :text => checkOutDay)[0].click
+          page.all(:xpath, "(//table)[2]//td", text: checkOutDay)[0].click
         elsif checkOutDay >= 10
           find("td", :text => checkOutDay).click
         end
 
       elsif checkOutDay <= 31
-
-        checkOut.click
-
         if checkOutDay <= 9
           page.all("td", :text => checkOutDay)[0].click
         elsif checkOutDay >= 10
           find("td", :text => checkOutDay).click
         end
       end
+
     end
 
   	def addAdults (noOfAdults)                                                                                     #Clicks the '+' for Adults 'noOfAdults' times 

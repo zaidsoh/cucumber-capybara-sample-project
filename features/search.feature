@@ -38,7 +38,7 @@ Scenario: Access AIRBNB and perform an advanced search
 	Then results on the first page should atleast include '5' 'bedrooms'
 	* first property should have 'Pool' under 'Facilities' category
 
-@ MAP INTERACTION
+@ MAP INTERACTION P1
 Scenario: Access AIRBNB, perform an advanced search and interact with the map
 
 	Given that the user is on airbnb's search page
@@ -54,3 +54,20 @@ Scenario: Access AIRBNB, perform an advanced search and interact with the map
 
 	Then background color changes for the selected result map pill
 	* information in the map pop up and search result should match
+
+@ MAP INTERACTION P2
+Scenario: Access AIRBNB, perform an advanced search and interact with the map
+
+	Given that the user is on airbnb's search page
+
+	When user sets 'WHERE' as 'Rome, Italy'
+	* 'CHECK-IN' as 'current date plus 7 days'
+	* 'CHECK-OUT' as 'current date plus 14 days'
+	* 'Adults' as '2'
+	* 'Children' as '1'
+	* 'Infants' as '0'
+	* clicks 'Search'
+	* hovers over search result '1'
+	* clicks 'property that changes color'
+	
+	Then information of search result '1' and its details should match

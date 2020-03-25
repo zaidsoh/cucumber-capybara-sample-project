@@ -21,8 +21,10 @@ class SearchResults < SitePrism::Page
     #Collections of elements with the same selector on SearchResults
 	elements :searchResults, :xpath, '//*[contains(@itemprop,"itemListElement")]'
 	elements :guestBedStrings, :xpath, "//*[contains(@itemprop,'itemListElement')]//*[contains(text(),'guests')]"
+	elements :additionalInfoStrings, :xpath , "//*[contains(@itemprop,'itemListElement')]//*[contains(text(),'Wifi') or contains(text(),'Kitchen')]"
 
 	elements :mapPills, :xpath, "//aside//*[contains(@data-veloute,'map/markers/BasePillMarker')]"
+	elements :mapPillsColors, :xpath, "//aside//*[contains(@data-veloute,'map/markers/BasePillMarker')]//descendant::div[contains(@style,'background-color')]"
 
 	elements :resultTitles, :xpath, "//*[contains(@itemprop,'itemListElement')]//*[contains(text(),'Entire') or contains(text(),'room')]"
 	elements :resultNames, :xpath, "//*[contains(@itemprop,'itemListElement')]//*[contains(@style,'ellipsis')]"
@@ -35,13 +37,29 @@ class SearchResults < SitePrism::Page
 	end
 
 	def verifyDurationFilter																						#Verifies the duration filter by calculating the duration using current date
-		currentDay = DateTime.now.strftime("%d").to_i																#and comparing it with durationString text fetched from the filter
-		checkInDay = currentDay + 7
-		checkOutDay = checkInDay + 7
+		currentDate = DateTime.now
+		currentMonthNameCom = DateTime.now.strftime("%B")														
+													            													
+		checkInDate = currentDate.next_day(7)
+		checkOutDate = currentDate.next_day(14)
 
-		currentMonthCom = DateTime.now.strftime("%B")
-		currentMonth = currentMonthCom[0,3]
-		expectedDuration = currentMonth+' '+checkInDay.to_s+' - '+checkOutDay.to_s
+		checkInDayNum = checkInDate.strftime("%d")
+        checkInDayNum = checkInDayNum.chars.last
+
+		checkOutDayNum = checkOutDate.strftime("%d")
+        checkOutDayNum = checkOutDayNum.chars.last
+
+		checkInMonthNameCom = checkInDate.strftime("%B")
+		checkOutMonthNameCom = checkOutDate.strftime("%B")
+
+		checkInMonthName = checkInMonthNameCom[0,3]
+		checkOutMonthName = checkOutMonthNameCom[0,3]
+
+		if (checkInMonthName == checkOutMonthName)
+			expectedDuration = checkInMonthName+' '+checkInDayNum+' - '+checkOutDayNum
+		elsif (checkInMonthName != checkOutMonthName)
+			expectedDuration = checkInMonthName+' '+checkInDayNum+' - '+checkOutMonthName+' '+checkOutDayNum
+		end
 
 		expect(durationString.text).to eq expectedDuration
 	end
@@ -67,7 +85,7 @@ class SearchResults < SitePrism::Page
 
 	def verifyBedroomResults (expectedNoOfBedrooms)																	#Verifies the number of bedrooms in each search result to be greater than 'expectedNoOfBedrooms'
 		expectedNoOfBedrooms = expectedNoOfBedrooms.to_i															#by fetching the bedroomString from each search result
-		loopCount =  page.all(:css,'._1ulsev2').count
+		loopCount =  searchResults.count
 		loopCount = loopCount - 1
 
 		bedroomStringsArray = guestBedStrings.map { |guestBedString| guestBedString.text }
@@ -108,16 +126,16 @@ class SearchResults < SitePrism::Page
 
     def hoverSearchResult(base)
     	resultNo = base.to_i - 1
-    	firstProperty = searchResults[resultNo]
-    	firstProperty.hover
+    	propertyTohover = searchResults[resultNo]
+    	propertyTohover.hover
     end
 
     def verifyPillColor																							#Verifies background color of selected map pill
-    	color = mapPills[0].native.css_value('background-color')
-    	expect(color).to eq 'rgb(34, 34, 34)'
+    	color = mapPillsColors[0].native.css_value('background-color')
+    	expect(color).to eq 'rgba(34, 34, 34, 1)'
     end
 
-    def verifyInfoMatches																						#Verifies that the information of first search result and its map pop up matches
+    def verifyPopUpInfoMatches																						#Verifies that the information of first search result and its map pop up matches
     	firstPropertyPill = mapPills[0]
     	firstPropertyPill.click
 
@@ -141,5 +159,40 @@ class SearchResults < SitePrism::Page
 		popUpRating = popUpRating.text
 		resultRating = resultRatingsArray[0]
 		expect(popUpRating).to eq resultRating
+	end
+
+	def clickIdentifiedProperty
+
+		loopCount =  mapPills.count
+		loopCount = loopCount - 1
+
+		while loopCount >= 0
+
+			color = mapPillsColors[loopCount].native.css_value('background-color')
+
+			if color == 'rgba(34, 34, 34, 1)'
+				mapPills[loopCount].click
+				popUpTitle.click
+				loopCount = loopCount - 1
+			else
+				loopCount = loopCount - 1
+			end
+		end
+	end
+
+	def getSearchResultName(index)
+		index = index.to_i -1
+		return resultNames[index].text
+	end
+
+	def getSearchResultPrice(index)
+		index = index.to_i -1
+		return resultPrices[index].text
+	end
+
+	def getSearchResultRating(index)
+		index = index.to_i -1
+		temp = resultRatings[index].native.css_value('aria-label')
+		return temp.split(" ;")[0]
 	end
 end		
