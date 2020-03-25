@@ -1,0 +1,8 @@
+SETUP AND EXECUTION GUIDE:
+
+1) Go to "https://rubyinstaller.org/downloads/" and download the recommended ruby+devkit version (Right now thats 2.6.5-1)
+2) Run the setup and complete the installation
+3) Go to command prompt and check your installation by executing 'ruby -v' (to check for the installed ruby version)
+4) With the command prompt, download and install the needed gems by using "gem install 'gem name here'"
+5) Gems installations needed: cucumber, capybara, rpec, site_prism
+6) Once completed, access the path which contains the 'features' folder for your tests and execute the command 'cucumber'
