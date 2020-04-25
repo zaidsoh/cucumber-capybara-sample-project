@@ -7,10 +7,10 @@
 |   |-- pages
 |   |   |-- search_main.rb                         -----> Search main page
 |   |   |-- search_results.rb                      -----> Search results page 
-|   |   `-- result_details.rb                      -----> Result details page     
+|   |   |-- result_details.rb                      -----> Result details page     
 |   |-- step_definitions
-|   |   `-- test_steps.rb                          -----> Implementation of test definitions
+|   |   |-- test_steps.rb                          -----> Implementation of test definitions
 |   |-- support
-|   |   `-- env.rb                                 -----> Configuration file
-|   `-- search.feature                             -----> Feature file containing test definitions
-`-- README.txt
+|   |   |-- env.rb                                 -----> Configuration file
+|   |-- search.feature                             -----> Feature file containing test definitions
+|-- README.txt
